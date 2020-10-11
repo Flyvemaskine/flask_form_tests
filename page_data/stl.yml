@@ -1,8 +1,8 @@
-toolname: stl
-toolname-trim: stl
+about: it does stuff. More stuff. STL stuff
 category: Modeling
 owners:
-  - cfede
-  -
-  - 
-about: it does stuff
+- cfede
+- ''
+- ''
+toolname: stl
+toolname-trim: stl

@@ -2,10 +2,14 @@ from flask import request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Length
+
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+
 import re
+import os
 
 from app.models import User
-
+from app import photos
 
 class EditToolForm(FlaskForm):
     toolname=StringField("Tool Name", validators=[DataRequired()])
@@ -18,13 +22,17 @@ class EditToolForm(FlaskForm):
     owner2=StringField("Owner 2")
     owner3=StringField("Owner 3")
     about=StringField("About", validators=[DataRequired()])
+    photo=FileField(validators=[FileAllowed(photos, 'Image only!')])
     submit=SubmitField("Apply Changes")
+
+
 
     @staticmethod
     def trim_toolname(toolname):
         trimmed_toolname=re.sub(r"([^A-Za-z0-9])+","-", toolname).lower()
         # re.findall(r"[A-Za-z0-9]+", "Data_!!Foundry")
         return(trimmed_toolname)
+
 
 class DeleteToolButton(FlaskForm):
     delete=SubmitField("Delete Tool")

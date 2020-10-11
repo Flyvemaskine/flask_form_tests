@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 import os
 import yaml
 import re
+from app import photos
 from app.models import User
 from app.main import bp
 from app.main.forms import EditToolForm, DeleteToolForm, DeleteToolButton
@@ -48,7 +49,20 @@ def edit_tool(toolname):
         tool_yaml["owners"] = [form.owner1.data, form.owner2.data, form.owner3.data]
         tool_yaml["about"] = form.about.data
 
+        if form.photo.data:
+            try:
+                os.remove("page_data/screenshots/"+form.trim_toolname(form.toolname.data)+".jpg")
+            except:
+                pass
+            photos.save(form.photo.data,
+                        name=form.trim_toolname(form.toolname.data)+".jpg")
+        else:
+            if not os.path.exists("page_data/screenshots/"+form.trim_toolname(form.toolname.data)+".jpg"):
+                flash("There isn't a screenshot on file. Please upload one.")
+                return(redirect(url_for('main.edit_tool', toolname=toolname)))
+
         save_yaml(tool_yaml, tool_yaml['toolname-trim'])
+
         flash('Your changes have been saved')
         return(redirect(url_for('main.index')))
     elif request.method == "GET":
@@ -76,6 +90,7 @@ def delete_tool(toolname):
                current_user.username in admins:
                 if toolname == form.toolname.data:
                     remove_yaml(toolname)
+                    os.remove("page_data/screenshots/"+toolname+".jpg")
                     flash(toolname + ' has been deleted')
                     return(redirect(url_for('main.index')))
                 else:

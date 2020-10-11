@@ -4,6 +4,7 @@ import os
 from flask import Flask, request, current_app
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
+from flask_uploads import UploadSet, configure_uploads, IMAGES, patch_request_class
 from config import Config
 
 
@@ -11,12 +12,16 @@ login = LoginManager()
 login.login_view = 'auth.login'
 login.login_message = ('Please log in to access this page.')
 bootstrap = Bootstrap()
+photos = UploadSet('photos', IMAGES)
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
+
+    configure_uploads(app, photos)
+    patch_request_class(app)
     login.init_app(app)
     bootstrap.init_app(app)
 
